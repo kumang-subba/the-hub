@@ -1,8 +1,5 @@
-# React + Vite
+# The Hub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Movie app made using <span><a href="https://developer.themoviedb.org/docs" target="_blank" rel="noopener noreferrer">TMDB API</a></span>
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<p><a href="https://kumang-subba.github.io/the-hub/" target="_blank" rel="noopener noreferrer">View the project here</a></p>
