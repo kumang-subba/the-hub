@@ -42,7 +42,7 @@ const NavBar = () => {
       <div className="flex items-center py-2 justify-between">
         <div className="flex items-center gap-4">
           <img
-            src="/images/navbar.png"
+            src="./images/navbar.png"
             alt="title"
             className="w-36 h-auto cursor-pointer"
             onClick={() => navigate("/")}
