@@ -8,23 +8,59 @@ import { useNavigate } from "react-router-dom";
 
 const VideoCarousel = ({ videos, type }) => {
   const [sliderIndex, setSliderIndex] = useState(0);
+  const [mainIndex, setMainIndex] = useState(0);
   const { movieGenres, fetchModel, tvGenres } = useMovie();
+  const [slideDir, setSlideDir] = useState("right");
   const matches = useMediaQuery("(min-width: 768px)");
   const slide = useRef();
   const navigate = useNavigate();
   const handleSlider = (dir) => {
+    slide.current.style.transition = "all 500ms";
     if (dir === "right") {
+      setSlideDir("right");
+      slide.current.style.transform = `translate3d(-100%,0,0)`;
+      if (mainIndex >= 1) {
+        slide.current.style.transform = `translate3d(-200%,0,0)`;
+      }
       setSliderIndex((prev) => prev + 1);
+      setMainIndex((prev) => prev + 1);
     } else {
+      setSlideDir("left");
+      if (mainIndex >= 1) {
+        slide.current.style.transform = `translate3d(0%,0,0)`;
+      } else {
+        slide.current.style.transform = `translate3d(-100%,0,0)`;
+      }
+
       setSliderIndex((prev) => prev - 1);
+      setMainIndex((prev) => prev - 1);
     }
   };
-
+  const progress = matches ? [...Array(4)] : [...Array(5)];
+  const [progressVisible, setProgressVisible] = useState(false);
   return (
-    <div className="relative flex justify-center overflow-x-clip h-auto">
+    <div
+      className="relative flex justify-center overflow-x-clip h-auto"
+      onMouseEnter={() => setProgressVisible(true)}
+      onMouseLeave={() => setProgressVisible(false)}
+    >
+      <div className="flex absolute  gap-1 -top-8 right-8">
+        {progress.map((item, index) => {
+          return (
+            <div
+              className={` w-6 h-3 shadow-sm shadow-black rounded-sm  ${
+                mainIndex % progress.length == index
+                  ? "bg-slate-200"
+                  : "bg-gray-600"
+              } ${progressVisible ? "visible" : "hidden"}`}
+              key={index}
+            ></div>
+          );
+        })}
+      </div>
       <div
         className={`cursor-pointer z-10 text-7xl flex justify-center items-center px-0 md:px-3 backdrop-opacity-50 backdrop-contrast-50 opacity-0 hover:opacity-100 hover:animate-pulse ${
-          sliderIndex == 0 && "invisible"
+          mainIndex == 0 && "invisible"
         }`}
         onClick={() => handleSlider("left")}
       >
@@ -32,10 +68,36 @@ const VideoCarousel = ({ videos, type }) => {
       </div>
       <div
         className={`flex grow [--items-per-screen:4] md:[--items-per-screen:5] transition-all`}
-        style={{ transform: `translateX(-${sliderIndex * 100}%)` }}
         ref={slide}
+        onTransitionEnd={() => {
+          if (sliderIndex > 1 && slideDir === "right") {
+            slide.current.appendChild(slide.current.firstChild);
+            slide.current.appendChild(slide.current.firstChild);
+            slide.current.appendChild(slide.current.firstChild);
+            slide.current.appendChild(slide.current.firstChild);
+            matches && slide.current.appendChild(slide.current.firstChild);
+            slide.current.style.transition = "none";
+            setSliderIndex((prev) => prev - 1);
+            slide.current.style.transform = `translate3d(-100%,0,0)`;
+            setTimeout(() => {
+              slide.current.style.transition = "all 250ms";
+            });
+          } else if (sliderIndex !== mainIndex) {
+            slide.current.prepend(slide.current.lastElementChild);
+            slide.current.prepend(slide.current.lastElementChild);
+            slide.current.prepend(slide.current.lastElementChild);
+            slide.current.prepend(slide.current.lastElementChild);
+            matches && slide.current.prepend(slide.current.lastElementChild);
+            slide.current.style.transition = "none";
+            slide.current.style.transform = `translate3d(-100%,0,0)`;
+            setTimeout(() => {
+              slide.current.style.transition = "all 250ms";
+            });
+            setSliderIndex((prev) => prev + 1);
+          }
+        }}
       >
-        {videos?.map((item, index) => {
+        {videos?.map((item) => {
           const genre = type == "movie" ? movieGenres : tvGenres;
           const itemGenre = genre.reduce((acc, curr) => {
             if (item.genre_ids.includes(curr.id) && acc.length < 3) {
@@ -45,8 +107,9 @@ const VideoCarousel = ({ videos, type }) => {
           }, []);
           return (
             <div
-              key={index}
+              key={item.id}
               className="flex-[0_0_calc(100%/var(--items-per-screen))] group hover:scale-125 hover:rounded-lg transition-transform group duration-500 relative hover:z-40 pr-2 hover:-translate-y-1/4"
+              onTransitionEnd={(e) => e.stopPropagation()}
             >
               <img
                 src={
@@ -92,9 +155,7 @@ const VideoCarousel = ({ videos, type }) => {
         })}
       </div>
       <div
-        className={`cursor-pointer z-10 text-7xl flex justify-center items-center px-3 backdrop-opacity-50 backdrop-contrast-50 opacity-0 hover:opacity-100 hover:animate-pulse ${
-          (sliderIndex + 1) * 5 >= videos?.length && matches && "invisible"
-        } ${sliderIndex * 5 >= videos?.length && !matches && "invisible"}`}
+        className={`cursor-pointer z-10 text-7xl flex justify-center items-center px-3 backdrop-opacity-50 backdrop-contrast-50 opacity-0 hover:opacity-100 hover:animate-pulse`}
         onClick={() => handleSlider("right")}
       >
         &#8250;

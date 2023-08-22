@@ -8,7 +8,6 @@ const SelectMenu = ({ genres }) => {
     useMovie();
   const [open, setOpen] = useState(false);
   const selectRef = useRef();
-
   useEffect(() => {
     function closeSelectMenu(e) {
       if (selectRef.current && !selectRef.current.contains(e.target)) {
@@ -33,9 +32,9 @@ const SelectMenu = ({ genres }) => {
           open ? "block" : "hidden"
         } grid grid-rows-6 grid-flow-col gap-x-3 gap-y-2 p-2`}
       >
-        {genres?.map((genre, index) => (
+        {genres?.map((genre) => (
           <div
-            key={index}
+            key={genre.id}
             className=" hover:underline cursor-pointer"
             onClick={() => {
               setOpen(false);
