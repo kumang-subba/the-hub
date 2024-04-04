@@ -36,12 +36,17 @@ const Search = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
+    let debounce;
     if (searchQuery == "") {
       navigate(url);
     } else {
+      debounce = setTimeout(() => {
       fetchSearchResults();
+      }, 300);
     }
+    return () => clearTimeout(debounce);
   }, [loc]);
   return (
     <>
